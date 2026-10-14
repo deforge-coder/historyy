@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#343638">
+<title>Новиков. Цена просвещения</title>
+<style>
+:root {
+  --bg:#343638;
+  --dark:#242628;
+  --paper:#e8dfc9;
+  --ink:#302e28;
+  --gold:#c9a96b;
+  --red:#c42f35;
+  --green:#a9c19b;
+  --muted:#bdb5a5;
+}
+* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body {
+  margin:0;
+  min-height:100vh;
+  color:var(--paper);
+  background:radial-gradient(ellipse at 20% 10%,#494b4d,transparent 48%),var(--bg);
+  font-family:Georgia,"Times New Roman",serif;
+  overflow-x:hidden;
+}
+button { font:inherit; }
+button:focus-visible { outline:3px solid var(--gold); outline-offset:3px; }
+.ambient { position:fixed; inset:0; overflow:hidden; pointer-events:none; opacity:.12; z-index:0; }
+.decor { position:absolute; color:#e8dfc9; animation:float 8s ease-in-out infinite alternate; }
+.d1 { top:7%; left:-20px; font-size:95px; transform:rotate(-12deg); }
+.d2 { top:36%; right:-12px; font-size:85px; }
+.d3 { bottom:10%; left:2%; font-size:75px; }
+.d4 { top:64%; right:5%; font-size:68px; }
+.d5 { top:4%; right:5%; font-size:65px; }
+@keyframes float { to { translate:0 12px; } }
+.app {
+  position:relative;
+  z-index:1;
+  width:100%;
+  max-width:760px;
+  margin:auto;
+  padding:18px 13px calc(35px + env(safe-area-inset-bottom));
+}
+.masthead { text-align:center; padding:12px 5px 18px; border-bottom:1px solid #c9b78e55; }
+.eyebrow { font:10px Arial,sans-serif; letter-spacing:2.5px; text-transform:uppercase; color:var(--gold); }
+h1 { font-size:clamp(34px,9vw,52px); line-height:1; margin:13px 0 9px; letter-spacing:-1px; }
+.subtitle { font-size:13px; line-height:1.6; color:#c9c0ae; max-width:440px; margin:auto; }
+.stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; margin:15px 0; }
+.stat { background:var(--dark); border:1px solid #ffffff16; padding:10px 4px; text-align:center; border-radius:3px; min-width:0; }
+.stat-label { font:9px Arial,sans-serif; letter-spacing:.5px; text-transform:uppercase; color:var(--muted); line-height:1.5; }
+.stat-value { display:block; margin-top:6px; font-size:clamp(16px,4.5vw,23px); font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.stat-value.danger { color:#ff6868; }
+.progress-area { margin:16px 0 22px; }
+.progress-label { display:flex; justify-content:space-between; gap:8px; font:10px Arial,sans-serif; letter-spacing:1px; text-transform:uppercase; color:#c7c0b3; margin-bottom:8px; }
+.progress-track { height:4px; background:#202123; border-radius:5px; overflow:hidden; }
+.progress-fill { height:100%; width:0; background:var(--gold); transition:width .4s; }
+.heading { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:12px; }
+.heading h2 { font-size:18px; font-weight:normal; margin:0; }
+.heading span { font:10px Arial,sans-serif; color:var(--muted); letter-spacing:.7px; }
+.card-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; }
+.chapter {
+  min-width:0;
+  min-height:119px;
+  padding:12px 5px;
+  background:#282a2c;
+  color:var(--paper);
+  border:1px solid #a99b7c55;
+  border-radius:3px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  text-align:center;
+  transition:.25s;
+  overflow-wrap:anywhere;
+}
+.chapter .num { font:10px Arial,sans-serif; letter-spacing:2px; color:var(--gold); }
+.chapter .ico { font-size:24px; }
+.chapter .ctitle { font-size:12px; line-height:1.4; }
+.chapter.locked { opacity:.55; }
+.chapter.available { cursor:pointer; border-color:var(--gold); box-shadow:0 0 18px #c9a96b20; animation:unlock .5s ease both; }
+.chapter.available:active { transform:scale(.96); }
+.chapter.completed { border-color:#84947b; background:#333b34; }
+@keyframes unlock { from { opacity:.2; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+.final-chapter { grid-column:1/-1; min-height:86px; flex-direction:row; gap:12px; background:#3a3529; border-color:var(--gold); }
+.final-chapter .ctitle { font-size:15px; }
+.final-chapter .desc { font-size:11px; color:#c7bda8; margin-top:4px; }
+.note { text-align:center; font-size:12px; color:var(--muted); line-height:1.6; margin:15px 0; }
+.panel { margin-top:18px; padding:15px; background:#282a2c; border:1px solid #c9a96b66; }
+.panel h3 { font-size:19px; color:var(--gold); font-weight:normal; margin:0 0 10px; }
+.panel p { font-size:13px; line-height:1.7; color:#ddd3bf; }
+.secret-box { display:flex; gap:14px; align-items:center; }
+.secret-box img { width:84px; height:100px; object-fit:cover; border:1px solid #c9a96b66; }
+.secret-question { font-size:36px; color:var(--gold); min-width:70px; text-align:center; }
+.hidden { display:none!important; }
+.overlay {
+  position:fixed;
+  inset:0;
+  z-index:20;
+  background:#151617e8;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  animation:fade .2s;
+}
+@keyframes fade { from { opacity:0; } to { opacity:1; } }
+.modal {
+  position:relative;
+  width:100%;
+  max-width:570px;
+  margin:auto 0;
+  padding:22px 17px;
+  background:repeating-linear-gradient(0deg,transparent,transparent 27px,#6d624411 28px),var(--paper);
+  color:var(--ink);
+  border:1px solid #b9a77f;
+  box-shadow:0 20px 70px #0008;
+  animation:rise .3s ease;
+}
+.modal:before { content:""; position:absolute; inset:6px; border:1px solid #6e63442e; pointer-events:none; }
+.mc { position:relative; z-index:1; }
+@keyframes rise { from { transform:translateY(22px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+.modal-top { display:flex; align-items:center; justify-content:space-between; gap:10px; font:10px Arial,sans-serif; text-transform:uppercase; letter-spacing:1.3px; color:#766d5a; }
+.close { min-width:38px; min-height:38px; border:1px solid #71684d66; background:transparent; color:var(--ink); font-size:21px; cursor:pointer; }
+.modal h2 { font-size:clamp(25px,7vw,35px); line-height:1.13; margin:15px 0 12px; }
+.description { font-size:14px; line-height:1.7; color:#454238; margin:0 0 18px; }
+.options { display:flex; flex-direction:column; gap:9px; }
+.option {
+  width:100%;
+  min-height:53px;
+  text-align:left;
+  padding:11px 10px;
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  background:#f2ead8;
+  border:1px solid #b9ac90;
+  color:#302e28;
+  cursor:pointer;
+  font-size:14px;
+  line-height:1.5;
+}
+.option:active { background:#e2d4b7; }
+.option:disabled { opacity:.55; cursor:default; }
+.letter { flex:0 0 27px; width:27px; height:27px; display:grid; place-items:center; background:#393833; color:var(--paper); border-radius:50%; font-size:12px; }
+.option-text { flex:1; }
+.paper-footer { border-top:1px solid #8b806455; margin-top:17px; padding-top:12px; text-align:center; color:#766d5a; font-size:10px; line-height:1.5; }
+.primary { width:100%; min-height:47px; padding:12px; margin-top:14px; border:1px solid #292823; background:#333330; color:var(--paper); cursor:pointer; }
+.warning-label { text-align:center; color:var(--red); font:bold 11px Arial,sans-serif; letter-spacing:2px; text-transform:uppercase; }
+.catherine { display:block; width:100%; max-height:185px; object-fit:contain; margin:12px auto; }
+.eye-wrap { display:flex; justify-content:center; margin:18px; }
+.eye { position:relative; width:76px; height:45px; background:#c52b30; border-radius:80% 15%; transform:rotate(45deg); box-shadow:0 0 22px #c52b3070; animation:pulse 2s infinite; }
+.eye:before { content:""; position:absolute; width:32px; height:32px; background:#f0d8c4; border-radius:50%; top:6px; left:22px; }
+.eye:after { content:""; position:absolute; width:16px; height:16px; background:#a10c17; border:3px solid #f0d8c4; border-radius:50%; top:13px; left:30px; }
+@keyframes pulse { 50% { box-shadow:0 0 30px #c52b30; } }
+.reward {
+  position:fixed;
+  z-index:40;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:min(92vw,390px);
+  max-height:82vh;
+  overflow:auto;
+  padding:18px;
+  background:#252729;
+  color:var(--paper);
+  border:1px solid var(--gold);
+  box-shadow:0 12px 45px #0009;
+  opacity:0;
+  pointer-events:none;
+}
+.reward.show { animation:rewardIn .3s ease forwards; }
+@keyframes rewardIn { from { opacity:0; scale:.93; } to { opacity:1; scale:1; } }
+.reward h3 { font-size:19px; font-weight:normal; margin:0 0 12px; color:var(--gold); }
+.reward .line { font-size:13px; line-height:1.9; }
+.positive { color:var(--green); }
+.negative { color:#ff7777; }
+.finance-summary { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:12px 0; }
+.finance-cell { background:#1d1f20; padding:10px; text-align:center; }
+.finance-cell small { display:block; color:var(--muted); font:10px Arial,sans-serif; text-transform:uppercase; letter-spacing:.5px; }
+.finance-cell strong { display:block; margin-top:6px; font-size:17px; overflow-wrap:anywhere; color:#fff; }
+.capital-change { padding:10px; border-top:1px solid #ffffff22; border-bottom:1px solid #ffffff22; line-height:1.8; font-size:13px; }
+.transactions { display:flex; flex-direction:column; gap:9px; }
+.transaction { background:#202224; border:1px solid #ffffff17; padding:12px; }
+.transaction-head { display:flex; justify-content:space-between; gap:8px; font-size:13px; margin-bottom:8px; }
+.transaction-head span:last-child { color:var(--gold); white-space:nowrap; }
+.transaction-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
+.transaction-grid div { background:#303234; padding:8px 5px; text-align:center; }
+.transaction-grid small { display:block; color:var(--muted); font:9px Arial,sans-serif; text-transform:uppercase; line-height:1.5; }
+.transaction-grid strong { display:block; font-size:12px; margin-top:4px; overflow-wrap:anywhere; }
+.transaction-foot { font-size:11px; color:#c6bda9; margin-top:8px; line-height:1.6; }
+.endings { font-size:14px; line-height:1.8; }
+.endings img { display:block; max-width:150px; max-height:180px; object-fit:contain; margin:12px auto; }
+
+/* Мини-игра с Екатериной II */
+.runner-start-btn {
+  display:block;
+  width:100%;
+  margin-top:22px;
+  padding:16px 20px;
+  border:2px solid #6f1717;
+  background:#8c2222;
+  color:#fff5df;
+  font:inherit;
+  font-weight:800;
+  letter-spacing:1px;
+  cursor:pointer;
+  transition:background .2s,transform .2s;
+}
+.runner-start-btn:hover { background:#a72b2b; transform:translateY(-2px); }
+.runner-overlay[hidden] { display:none!important; }
+.runner-overlay {
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow-y:auto;
+  padding:18px;
+  background:rgba(10,9,8,.88);
+  backdrop-filter:blur(5px);
+}
+.runner-window {
+  width:min(100%,1000px);
+  padding:20px;
+  color:#282018;
+  background:#e8dcc0;
+  border:3px solid #8b6b43;
+  box-shadow:0 18px 70px #0009;
+  font-family:Georgia,"Times New Roman",serif;
+}
+.runner-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+.runner-eyebrow { font-size:11px; letter-spacing:3px; color:#8c2222; font-weight:bold; }
+.runner-header h2 { margin:5px 0 0; font-size:clamp(21px,4vw,32px); }
+.runner-close { width:42px; height:42px; border:1px solid #8b6b43; background:transparent; color:#33261b; font-size:30px; cursor:pointer; }
+.runner-stats { display:flex; justify-content:space-between; gap:12px; margin:10px 0; padding:10px 12px; background:#d6c5a3; font-size:14px; }
+.runner-canvas-wrap { position:relative; width:100%; overflow:hidden; border:2px solid #57402b; background:#d5c29d; }
+#runnerCanvas { display:block; width:100%; height:auto; aspect-ratio:900 / 380; touch-action:manipulation; }
+.runner-message { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:14px; background:rgba(25,18,13,.42); }
+.runner-message.runner-message-hidden { display:none; }
+.runner-message-card { width:min(100%,430px); padding:20px; text-align:center; color:#2c2118; background:#f0e3c5; border:2px solid #8b6b43; box-shadow:0 8px 25px #0005; }
+.runner-message-card h3 { margin:0 0 10px; font-size:clamp(20px,4vw,29px); }
+.runner-message-card p { line-height:1.5; }
+.runner-message-card button,.runner-controls button { border:2px solid #5f1717; padding:12px 18px; background:#8c2222; color:#fff3dc; font:inherit; font-weight:bold; cursor:pointer; }
+.runner-message-card button:hover,.runner-controls button:hover { background:#a72b2b; }
+.runner-controls { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; padding-top:14px; font-size:13px; }
+.runner-controls button { min-width:120px; }
+
+@media(min-width:600px) {
+  .app { padding-left:22px; padding-right:22px; }
+  .chapter { min-height:135px; }
+  .modal { padding:27px 25px; }
+}
+@media(max-width:600px) {
+  .runner-overlay { padding:8px; }
+  .runner-window { padding:11px; }
+  .runner-stats { font-size:12px; }
+  .runner-controls { font-size:11px; }
+  .runner-controls button { min-width:100px; padding:10px; }
+}
+@media(max-width:360px) {
+  .card-grid { gap:6px; }
+  .chapter { min-height:110px; }
+  .chapter .ctitle { font-size:11px; }
+  .stat-label { font-size:8px; }
+  .transaction-grid strong { font-size:10px; }
+}
+</style>
+</head>
+<body>
+<div class="ambient" aria-hidden="true">
+  <div class="decor d1">⌨</div>
+  <div class="decor d2">✒</div>
+  <div class="decor d3">▤</div>
+  <div class="decor d4">✉</div>
+  <div class="decor d5">❧</div>
+</div>
+
+<main class="app">
+  <header class="masthead">
+    <div class="eyebrow">Издательское дело · XVIII век</div>
+    <h1>Цена<br>просвещения</h1>
+    <p class="subtitle">Примерьте на себя роль Николая Новикова. Развивайте издательское дело, распоряжайтесь капиталом и решайте, чем вы готовы рискнуть ради просвещения.</p>
+  </header>
+
+  <section class="stats" aria-label="Показатели">
+    <div class="stat">
+      <div class="stat-label">Капитал</div>
+      <strong class="stat-value" id="capital">100 000 ₽</strong>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Внимание властей</div>
+      <strong class="stat-value" id="risk">0</strong>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Тайные баллы</div>
+      <strong class="stat-value" id="novikov">?</strong>
+    </div>
+  </section>
+
+  <section class="progress-area">
+    <div class="progress-label">
+      <span>Путь издателя</span>
+      <span id="progressText">0 из 8 решений</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </section>
+
+  <div class="heading">
+    <h2>Архив издателя</h2>
+    <span>ОТКРЫВАЙТЕ ПО ПОРЯДКУ</span>
+  </div>
+
+  <section class="card-grid" id="cardGrid">
+    <button class="chapter available" data-card="0">
+      <span class="num">01</span><span class="ico">🔓</span><span class="ctitle">Каналы сбыта</span>
+    </button>
+    <button class="chapter locked" data-card="1" disabled>
+      <span class="num">02</span><span class="ico">🔒</span><span class="ctitle">Стимулирование покупок</span>
+    </button>
+    <button class="chapter locked" data-card="2" disabled>
+      <span class="num">03</span><span class="ico">🔒</span><span class="ctitle">Масонская ложа</span>
+    </button>
+    <button class="chapter locked" data-card="3" disabled>
+      <span class="num">04</span><span class="ico">🔒</span><span class="ctitle">Что издавать?</span>
+    </button>
+    <button class="chapter locked" data-card="4" disabled>
+      <span class="num">05</span><span class="ico">🔒</span><span class="ctitle">Оплата труда</span>
+    </button>
+    <button class="chapter locked" data-card="5" disabled>
+      <span class="num">06</span><span class="ico">🔒</span><span class="ctitle">Письмо Павла</span>
+    </button>
+    <button class="chapter locked" data-card="6" disabled>
+      <span class="num">07</span><span class="ico">🔒</span><span class="ctitle">Голод в России</span>
+    </button>
+    <button class="chapter locked" data-card="7" disabled>
+      <span class="num">08</span><span class="ico">🔒</span><span class="ctitle">Долги издателя</span>
+    </button>
+    <button class="chapter locked final-chapter" id="finalCard" disabled>
+      <span class="ico">🔒</span>
+      <span>
+        <span class="ctitle">Итоговая судьба</span>
+        <span class="desc">Откроется после восьми решений</span>
+      </span>
+    </button>
+  </section>
+
+  <p class="note">Каждое решение влияет на капитал. Расходы и доходы учитываются отдельно, даже если выбранный способ кажется абсурдным.</p>
+
+  <section class="panel hidden" id="secretPanel">
+    <h3>Неизвестный показатель</h3>
+    <div class="secret-box">
+      <div class="secret-question" id="secretMark">?</div>
+      <div><p id="secretDescription">Что скрывается за этим показателем? Завершите восемь решений, чтобы узнать.</p></div>
+    </div>
+  </section>
+
+  <section class="panel hidden" id="historyPanel">
+    <h3>Финансовая история</h3>
+    <p>В каждой операции расходы вычитаются из капитала, а доходы прибавляются к нему. Итог операции равен доходам минус расходы.</p>
+    <div class="transactions" id="transactions"></div>
+  </section>
+
+  <section class="panel hidden" id="finalSummary">
+    <h3>Итоги издательского пути</h3>
+    <div id="finalSummaryContent"></div>
+  </section>
+</main>
+
+<div class="overlay hidden" id="questionOverlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="mc">
+      <div class="modal-top">
+        <span id="questionNumber">Карточка 01</span>
+        <button class="close" id="closeQuestion" aria-label="Закрыть">×</button>
+      </div>
+      <h2 id="questionTitle"></h2>
+      <p class="description" id="questionDescription"></p>
+      <div class="options" id="options"></div>
+      <div class="paper-footer">Решение повлияет на капитал и дальнейшую судьбу издателя.</div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="warningOverlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="mc">
+      <div class="warning-label">Императорский надзор</div>
+      <img src="photo1.png" class="catherine" alt="Екатерина II" onerror="this.style.display='none'">
+      <div class="eye-wrap"><div class="eye"></div></div>
+      <h2 style="text-align:center">Вы привлекли внимание властей</h2>
+      <p class="description">Ваши решения больше не остаются незамеченными. За деятельностью издателя наблюдают. Каждый следующий риск приближает вас к критической черте.</p>
+      <button class="primary" id="closeWarning">Продолжить</button>
+      <div class="paper-footer">Внимание властей сохраняется до конца игры.</div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="resultsOverlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="mc">
+      <div class="modal-top">
+        <span id="resultKicker">Результаты решения</span>
+        <span id="resultStep">01 / 08</span>
+      </div>
+      <h2 id="resultTitle">Операция завершена</h2>
+      <p class="description" id="resultDescription"></p>
+      <div class="finance-summary">
+        <div class="finance-cell"><small>Потрачено</small><strong id="resultSpent">0 ₽</strong></div>
+        <div class="finance-cell"><small>Заработано</small><strong id="resultEarned">0 ₽</strong></div>
+      </div>
+      <div class="capital-change">
+        <div>Итог операции: <strong id="resultNet">0 ₽</strong></div>
+        <div>Капитал до решения: <strong id="capitalBefore">100 000 ₽</strong></div>
+        <div>Капитал после решения: <strong id="capitalAfter">100 000 ₽</strong></div>
+      </div>
+      <div id="resultFlags" class="description" style="margin-top:12px;margin-bottom:0"></div>
+      <button class="primary" id="continueResults">Продолжить</button>
+      <div class="paper-footer">Финансовые суммы являются игровыми условными значениями.</div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="endingOverlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="mc">
+      <div class="modal-top"><span>Последняя страница</span><span>ФИНАЛ</span></div>
+      <div class="endings" id="endingContent"></div>
+      <button class="primary" id="closeEnding">Вернуться к результатам</button>
+      <button class="primary" id="restartGame">Начать заново</button>
+      <div class="paper-footer">История издателя завершена.</div>
+      <button id="startRunnerBtn" class="runner-start-btn" type="button">Начать игру</button>
+    </div>
+  </div>
+</div>
+
+<div class="reward" id="rewardToast" aria-live="polite">
+  <h3 id="toastTitle">Операция завершена</h3>
+  <div class="line" id="toastBody"></div>
+</div>
+
+<script>
+"use strict";
+
+const INITIAL_CAPITAL = 100000;
+const RISK_LIMIT = 4;
+const TOTAL_QUESTIONS = 8;
+
+const money = value => new Intl.NumberFormat("ru-RU").format(value) + " ₽";
+const signedMoney = value => (value > 0 ? "+" : value < 0 ? "−" : "") + money(Math.abs(value));
+
+/*
+  spent = расходы по выбранному способу
+  earned = доходы по выбранному способу
+  net = earned - spent
+  Новый капитал = старый капитал + net
+
+  Все суммы являются условными игровыми значениями,
+  а не точными историческими данными.
+*/
+
+const questions = [
+  {
+    title: "Как наладить каналы сбыта продукции?",
+    description: "Вы развиваете издательское дело. Выберите способ распространения продукции.",
+    options: [
+      {letter:"А",text:"Раздавать в  ̶м̶е̶т̶р̶о̶ у извозчиков",spent:12000,earned:4000},
+      {letter:"Б",text:"Заставлять студентов покупать газеты и учебники.",spent:5000,earned:9000},
+      {letter:"В",text:"Договориться с культурными местами (театры, оперы) и книжными лавками о сотрудничестве",spent:10000,earned:26000},
+      {letter:"Г",text:"Сделать свою книжную лавку без блекджека, но с библиотекой-читальней",spent:18000,earned:44000,novikov:true}
+    ]
+  },
+  {
+    title: "Как стимулировать покупку издательской продукции?",
+    description: "Выберите способ привлечь покупателей к издательской продукции.",
+    options: [
+      {letter:"А",text:"Печатать провокационные книги, использовать броские заголовки",spent:0,earned:0,risk:true},
+      {letter:"Б",text:"Использовать рекламу, сарафанное радио",spent:0,earned:0},
+      {letter:"В",text:"Скидки, «бонусные» книги при покупке продукции на определённую сумму",spent:0,earned:0,novikov:true},
+      {letter:"Г",text:"Вытеснить с рынка конкурентов через массонские связи",spent:0,earned:0,risk:true}
+    ]
+  },
+  {
+    title: "Вы часть масонской ложи. Как будете вести свою деятельность?",
+    description: "Ваше участие в масонской ложе может повлиять на безопасность и репутацию издателя.",
+    options: [
+      {letter:"А",text:"Подпольно",spent:7000,earned:9000},
+      {letter:"Б",text:"Открыто, пусть все знают",spent:8000,earned:18000,risk:true,novikov:true},
+      {letter:"В",text:"Уехать в другую страну пока не признали иноагентом/экстремистом",spent:22000,earned:3000},
+      {letter:"Г",text:"Писать доносы на других массонов",spent:3000,earned:5000}
+    ]
+  },
+  {
+    title: "Что издавать?",
+    description: "Выберите направление издательской деятельности. Несколько направлений можно сочетать, но это потребует дополнительных ресурсов.",
+    options: [
+      {letter:"А",text:"Учебники, книги по науке",spent:10000,earned:23000},
+      {letter:"Б",text:"Переводы литературных и философских произведений",spent:12000,earned:26000},
+      {letter:"В",text:"Массонские книги",spent:9000,earned:19000,risk:true},
+      {letter:"Г",text:"Газеты и журналы",spent:8000,earned:22000},
+      {letter:"Д",text:"Все сразу",spent:35000,earned:65000,risk:true,novikov:true}
+    ]
+  },
+  {
+    title: "Сколько платить работникам (переводчикам, журналистам)?",
+    description: "Качество изданий зависит от людей, но расходы на команду могут оказаться значительными.",
+    options: [
+      {letter:"А",text:"Больше, чем кто-либо в России",spent:30000,earned:45000,risk:true,novikov:true},
+      {letter:"Б",text:"Как и в других издательствах",spent:14000,earned:25000},
+      {letter:"В",text:"Столько, сколько нужно, чтобы не умереть от голода",spent:6000,earned:9000},
+      {letter:"Г",text:"Не платить. Им нужна только пища для разума",spent:2000,earned:5000}
+    ]
+  },
+  {
+    title: "Павел в личном письме просит прислать ему массонские книги. Что делать?",
+    description: "Письмо ставит вас перед выбором между безопасностью и готовностью продолжать свою деятельность.",
+    options: [
+      {letter:"А",text:"Прислать назло Екатерине II (она ненавидит массонов)",spent:12000,earned:5000,risk:true,novikov:true},
+      {letter:"Б",text:"Вежливо отказать",spent:2000,earned:4000},
+      {letter:"В",text:"Невежливо отказать - сын все равно в немилости у императрицы",spent:1000,earned:2000},
+      {letter:"Г",text:"Сделать вид, что письмо не приходило",spent:3000,earned:3000}
+    ]
+  },
+  {
+    title: "В России массовый голод. Правительство бездействует. Что делать?",
+    description: "Страна переживает голод. Выберите, как поступить в условиях бездействия правительства.",
+    options: [
+      {letter:"А",text:"Занять денег, чтобы скупить хлеб у помещиков и раздавать его бесплатно крестьянам",spent:0,earned:0,risk:true,novikov:true},
+      {letter:"Б",text:"Через связи с массонами попытаться договориться об импорте продовольствия из Европы",spent:0,earned:0,risk:true},
+      {letter:"В",text:"Взять пример с властей и ничего не делать",spent:0,earned:0},
+      {letter:"Г",text:"Агитировать народ на свержение Екатерины II",spent:0,earned:0,risk:true,riskPoints:2}
+    ]
+  },
+  {
+    title: "Взять ли на себя долги издательства? (300.000 рублей)",
+    description: "Издательству необходимо решить вопрос с долгом. Выберите, как поступить с обязательствами.",
+    options: [
+      {letter:"А",text:"Объявить себя банкротом",spent:5000,earned:0},
+      {letter:"Б",text:"Взять долг на себя, заложить имение и закончить жизнь в бедности",spent:300000,earned:0,risk:true,novikov:true},
+      {letter:"В",text:"Повесить долг на других массонов",spent:3000,earned:10000},
+      {letter:"Г",text:"Новиковы - не Ланистеры, платить долги не обязательно",spent:0,earned:5000}
+    ]
+  }
+];
+
+const cardNames = [
+  "Каналы сбыта",
+  "Стимулирование покупок",
+  "Масонская ложа",
+  "Что издавать?",
+  "Оплата труда",
+  "Письмо Павла",
+  "Голод в России",
+  "Долги издателя"
+];
+
+const state = {
+  capital:INITIAL_CAPITAL,
+  risk:0,
+  novikovPoints:0,
+  completed:0,
+  transactions:[],
+  warningShown:false,
+  pendingWarning:false,
+  currentQuestion:null,
+  currentResult:null
+};
+
+const $ = id => document.getElementById(id);
+const questionOverlay = $("questionOverlay");
+const warningOverlay = $("warningOverlay");
+const resultsOverlay = $("resultsOverlay");
+const endingOverlay = $("endingOverlay");
+const rewardToast = $("rewardToast");
+
+function formatRisk() {
+  $("risk").textContent = String(state.risk);
+  $("risk").classList.toggle("danger",state.risk >= RISK_LIMIT);
+}
+
+function renderStats() {
+  $("capital").textContent = money(state.capital);
+  $("capital").classList.toggle("danger",state.capital < 0);
+  formatRisk();
+
+  $("novikov").textContent =
+    state.completed === TOTAL_QUESTIONS ? String(state.novikovPoints) : "?";
+
+  $("progressText").textContent =
+    state.completed + " из " + TOTAL_QUESTIONS + " решений";
+
+  $("progressFill").style.width =
+    (state.completed / TOTAL_QUESTIONS * 100) + "%";
+
+  renderCards();
+  renderHistory();
+}
+
+function renderCards() {
+  document.querySelectorAll("[data-card]").forEach(button => {
+    const index = Number(button.dataset.card);
+    const completed = index < state.completed;
+    const available = index === state.completed && state.completed < TOTAL_QUESTIONS;
+
+    button.classList.toggle("completed",completed);
+    button.classList.toggle("available",available);
+    button.classList.toggle("locked",!completed && !available);
+    button.disabled = !available;
+    button.querySelector(".ico").textContent =
+      completed ? "✓" : available ? "🔓" : "🔒";
+
+    if (completed) {
+      button.querySelector(".ctitle").textContent = cardNames[index] + " · готово";
+    } else {
+      button.querySelector(".ctitle").textContent = cardNames[index];
+    }
+  });
+
+  const finalCard = $("finalCard");
+  const finalAvailable = state.completed === TOTAL_QUESTIONS;
+
+  finalCard.disabled = !finalAvailable;
+  finalCard.classList.toggle("available",finalAvailable);
+  finalCard.classList.toggle("locked",!finalAvailable);
+  finalCard.querySelector(".ico").textContent = finalAvailable ? "✦" : "🔒";
+  finalCard.querySelector(".desc").textContent = finalAvailable
+    ? "Открыть финал и узнать судьбу издателя"
+    : "Откроется после восьми решений";
+}
+
+function renderHistory() {
+  const panel = $("historyPanel");
+  const list = $("transactions");
+
+  if (state.transactions.length === 0) {
+    panel.classList.add("hidden");
+    return;
+  }
+
+  panel.classList.remove("hidden");
+  list.innerHTML = "";
+
+  state.transactions.forEach(tx => {
+    const item = document.createElement("article");
+    item.className = "transaction";
+
+    const head = document.createElement("div");
+    head.className = "transaction-head";
+
+    const title = document.createElement("span");
+    title.textContent = (tx.index + 1) + ". " + tx.questionTitle;
+
+    const net = document.createElement("span");
+    net.className = tx.net >= 0 ? "positive" : "negative";
+    net.textContent = signedMoney(tx.net);
+    head.append(title,net);
+
+    const grid = document.createElement("div");
+    grid.className = "transaction-grid";
+
+    [
+      ["Потрачено",money(tx.spent)],
+      ["Заработано",money(tx.earned)],
+      ["Итог",signedMoney(tx.net)]
+    ].forEach(([label,value]) => {
+      const cell = document.createElement("div");
+      const small = document.createElement("small");
+      small.textContent = label;
+
+      const strong = document.createElement("strong");
+      strong.textContent = value;
+      strong.className = label === "Итог"
+        ? (tx.net >= 0 ? "positive" : "negative")
+        : "";
+
+      cell.append(small,strong);
+      grid.append(cell);
+    });
+
+    const foot = document.createElement("div");
+    foot.className = "transaction-foot";
+    foot.textContent = "Капитал: " + money(tx.before) + " → " + money(tx.after);
+
+    item.append(head,grid,foot);
+    list.append(item);
+  });
+}
+
+function openQuestion(index) {
+  if (index !== state.completed || index >= questions.length) return;
+
+  state.currentQuestion = index;
+  const question = questions[index];
+
+  $("questionNumber").textContent =
+    "Карточка " + String(index + 1).padStart(2,"0");
+
+  $("questionTitle").textContent = question.title;
+  $("questionDescription").textContent = question.description;
+
+  const options = $("options");
+  options.innerHTML = "";
+
+  question.options.forEach(option => {
+    const button = document.createElement("button");
+    button.className = "option";
+
+    const letter = document.createElement("span");
+    letter.className = "letter";
+    letter.textContent = option.letter;
+
+    const text = document.createElement("span");
+    text.className = "option-text";
+    text.textContent = option.text;
+
+    button.append(letter,text);
+    button.addEventListener("click",() => chooseOption(index,option));
+    options.append(button);
+  });
+
+  questionOverlay.classList.remove("hidden");
+}
+
+function chooseOption(index,option) {
+  if (index !== state.completed) return;
+
+  const question = questions[index];
+  const before = state.capital;
+  const spent = Math.max(0,Number(option.spent) || 0);
+  const earned = Math.max(0,Number(option.earned) || 0);
+  const net = earned - spent;
+  const after = before + net;
+
+  state.capital = after;
+
+  // Обычный риск даёт 1 пункт. Специальное riskPoints может задать другое число.
+  const riskPoints = Math.max(
+    0,
+    Number(option.riskPoints) || (option.risk ? 1 : 0)
+  );
+
+  state.risk += riskPoints;
+
+  if (option.novikov) state.novikovPoints++;
+
+  const tx = {
+    index,
+    questionTitle:question.title,
+    answer:option.text,
+    spent,
+    earned,
+    net,
+    before,
+    after,
+    risk:riskPoints > 0,
+    riskPoints,
+    novikov:!!option.novikov
+  };
+
+  state.transactions.push(tx);
+  state.completed++;
+  state.currentResult = tx;
+  state.pendingWarning = riskPoints > 0 && !state.warningShown;
+
+  questionOverlay.classList.add("hidden");
+  renderStats();
+  showResult(tx);
+  showToast(tx);
+
+  // Тайный показатель появляется только после восьмого решения.
+  if (state.completed === TOTAL_QUESTIONS) revealSecret();
+}
+
+function showResult(tx) {
+  $("resultKicker").textContent = "Финансовый отчёт";
+  $("resultStep").textContent =
+    String(tx.index + 1).padStart(2,"0") + " / " + String(TOTAL_QUESTIONS).padStart(2,"0");
+
+  $("resultTitle").textContent = "Результаты решения";
+  $("resultDescription").textContent = "Ваш выбор: " + tx.answer;
+  $("resultSpent").textContent = money(tx.spent);
+  $("resultEarned").textContent = money(tx.earned);
+
+  const netElement = $("resultNet");
+  netElement.textContent = signedMoney(tx.net);
+  netElement.className = tx.net >= 0 ? "positive" : "negative";
+
+  $("capitalBefore").textContent = money(tx.before);
+  $("capitalAfter").textContent = money(tx.after);
+
+  const flags = [];
+
+  if (tx.risk) {
+    flags.push("⚑ Внимание властей увеличилось на " + tx.riskPoints +
+      (tx.riskPoints === 1 ? " пункт." : " пункта."));
+  }
+
+  if (tx.novikov) flags.push("Получен тайный балл Новикова.");
+  if (!tx.risk) flags.push("Это решение не привлекло дополнительного внимания властей.");
+  if (tx.net < 0) flags.push("Убыток операции составил " + money(Math.abs(tx.net)) + ".");
+  if (tx.net > 0) flags.push("Прибыль операции составила " + money(tx.net) + ".");
+  if (tx.net === 0) flags.push("Операция не изменила размер капитала.");
+
+  $("resultFlags").textContent = flags.join(" ");
+  resultsOverlay.classList.remove("hidden");
+}
+
+function closeResults() {
+  resultsOverlay.classList.add("hidden");
+
+  if (state.pendingWarning) {
+    state.pendingWarning = false;
+    state.warningShown = true;
+    warningOverlay.classList.remove("hidden");
+    return;
+  }
+
+  if (state.completed === TOTAL_QUESTIONS) {
+    $("finalCard").classList.add("available");
+  }
+}
+
+function showToast(tx) {
+  $("toastTitle").textContent =
+    tx.net >= 0 ? "Операция завершена" : "Операция принесла убыток";
+
+  $("toastBody").innerHTML =
+    "Потрачено: <strong>" + money(tx.spent) + "</strong><br>" +
+    "Заработано: <strong>" + money(tx.earned) + "</strong><br>" +
+    "Итог операции: <strong class='" +
+    (tx.net >= 0 ? "positive" : "negative") + "'>" +
+    signedMoney(tx.net) + "</strong><br>" +
+    "Капитал: " + money(tx.before) + " → " + money(tx.after);
+
+  rewardToast.classList.remove("show");
+  void rewardToast.offsetWidth;
+  rewardToast.classList.add("show");
+  window.setTimeout(() => rewardToast.classList.remove("show"),3200);
+}
+
+function revealSecret() {
+  $("secretPanel").classList.remove("hidden");
+  $("secretMark").classList.add("hidden");
+
+  const box = document.querySelector(".secret-box");
+  let img = box.querySelector("img");
+
+  if (!img) {
+    img = document.createElement("img");
+    img.src = "photo2.png";
+    img.alt = "Николай Новиков";
+    img.onerror = () => {
+      img.remove();
+      $("secretMark").classList.remove("hidden");
+      $("secretMark").textContent = String(state.novikovPoints);
+    };
+    box.prepend(img);
+  }
+
+  $("secretDescription").textContent =
+    "Это баллы Новикова. Они начисляются за решения, повторяющие его исторический путь. Вы набрали " +
+    state.novikovPoints + " из " + TOTAL_QUESTIONS + " возможных баллов.";
+}
+
+function openFinal() {
+  if (state.completed !== TOTAL_QUESTIONS) return;
+
+  const allPoints = state.novikovPoints === TOTAL_QUESTIONS;
+  const arrested = state.risk >= RISK_LIMIT;
+  const poor = state.capital < INITIAL_CAPITAL;
+
+  let title;
+  let body;
+
+  if (allPoints) {
+    title = "Вы повторили путь Николая Новикова";
+    body = "Вы набрали все 8 баллов Новикова. Ваши решения повторили ключевые повороты его пути. Но просветительская деятельность имела свою цену: взгляды, издательские проекты и отношения с властью могли обернуться серьёзными последствиями.";
+  } else if (arrested) {
+    title = "Издатель под надзором";
+    body = "Внимание властей достигло критического уровня. Ваш капитал уже не гарантирует безопасность: риск ареста и ссылки становится главным итогом выбранного пути.";
+  } else if (state.capital < 0) {
+    title = "Издатель разорён";
+    body = "Ваш капитал ушёл в минус. Даже если некоторые решения приносили доход, расходы и обязательства оказались слишком велики. Издательское дело не выдержало финансовой нагрузки.";
+  } else if (poor) {
+    title = "Осторожный, но неуспешный предприниматель";
+    body = "Вы сохранили относительную осторожность, однако капитал оказался меньше первоначальных 100 000 рублей. Ваши решения не привели к финансовому успеху.";
+  } else {
+    title = "Успешный издатель";
+    body = "Вы сохранили свободу действий и завершили путь с капиталом не ниже первоначального. Вы сумели управлять расходами и доходами, не доведя ситуацию до критического уровня.";
+  }
+
+  $("endingContent").innerHTML = "";
+
+  const h = document.createElement("h2");
+  h.textContent = title;
+
+  const p = document.createElement("p");
+  p.textContent = body;
+
+  const p2 = document.createElement("p");
+  p2.textContent =
+    "Итоговый капитал: " + money(state.capital) +
+    ". Первоначальный капитал: " + money(INITIAL_CAPITAL) +
+    ". Внимание властей: " + state.risk +
+    ". Баллы Новикова: " + state.novikovPoints + " из " + TOTAL_QUESTIONS + ".";
+
+  const img = document.createElement("img");
+  img.src = "photo2.png";
+  img.alt = "Николай Новиков";
+  img.onerror = () => img.remove();
+
+  $("endingContent").append(h,img,p,p2);
+
+  $("finalSummary").classList.remove("hidden");
+  $("finalSummaryContent").textContent =
+    "Капитал: " + money(state.capital) +
+    ". Расходы за весь путь: " +
+    money(state.transactions.reduce((sum,tx) => sum + tx.spent,0)) +
+    ". Доходы за весь путь: " +
+    money(state.transactions.reduce((sum,tx) => sum + tx.earned,0)) +
+    ". Чистый результат: " + signedMoney(state.capital - INITIAL_CAPITAL) + ".";
+
+  endingOverlay.classList.remove("hidden");
+}
+
+function restartGame() {
+  state.capital = INITIAL_CAPITAL;
+  state.risk = 0;
+  state.novikovPoints = 0;
+  state.completed = 0;
+  state.transactions = [];
+  state.warningShown = false;
+  state.pendingWarning = false;
+  state.currentQuestion = null;
+  state.currentResult = null;
+
+  [questionOverlay,warningOverlay,resultsOverlay,endingOverlay].forEach(el => {
+    el.classList.add("hidden");
+  });
+
+  $("finalSummary").classList.add("hidden");
+  $("historyPanel").classList.add("hidden");
+  $("secretPanel").classList.add("hidden");
+  $("secretMark").textContent = "?";
+  $("secretMark").classList.remove("hidden");
+
+  const secretImg = document.querySelector(".secret-box img");
+  if (secretImg) secretImg.remove();
+
+  $("secretDescription").textContent =
+    "Что скрывается за этим показателем? Завершите восемь решений, чтобы узнать.";
+
+  renderStats();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+document.querySelectorAll("[data-card]").forEach(button => {
+  button.addEventListener("click",() => openQuestion(Number(button.dataset.card)));
+});
+
+$("finalCard").addEventListener("click",openFinal);
+$("closeQuestion").addEventListener("click",() => questionOverlay.classList.add("hidden"));
+$("continueResults").addEventListener("click",closeResults);
+
+$("closeWarning").addEventListener("click",() => {
+  warningOverlay.classList.add("hidden");
+  if (state.completed === TOTAL_QUESTIONS) {
+    $("finalCard").classList.add("available");
+  }
+});
+
+$("closeEnding").addEventListener("click",() => endingOverlay.classList.add("hidden"));
+$("restartGame").addEventListener("click",restartGame);
+
+renderStats();
+</script>
+
+<div id="runnerOverlay" class="runner-overlay" hidden>
+  <div class="runner-window">
+    <div class="runner-header">
+      <div>
+        <div class="runner-eyebrow">ПОБЕГ ИЗДАТЕЛЯ</div>
+        <h2>Екатерина уже близко!</h2>
+      </div>
+      <button id="runnerCloseBtn" class="runner-close" type="button" aria-label="Закрыть">×</button>
+    </div>
+
+    <div class="runner-stats">
+      <span>Книги: <b id="runnerScore">0</b></span>
+      <span>Ошибки: <b id="runnerMisses">0 / 3</b></span>
+    </div>
+
+    <div class="runner-canvas-wrap">
+      <canvas id="runnerCanvas" width="900" height="380">
+        Ваш браузер не поддерживает Canvas.
+      </canvas>
+
+      <div id="runnerMessage" class="runner-message">
+        <div class="runner-message-card">
+          <h3 id="runnerMessageTitle">Спасайтесь, издатель!</h3>
+          <p id="runnerMessageText">Перепрыгивайте через книги. Три столкновения, и Екатерина вас поймает.</p>
+          <button id="runnerActionBtn" type="button">Бежать!</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="runner-controls">
+      <span>Пробел / ↑ / клик по игре - прыжок</span>
+      <button id="runnerJumpBtn" type="button">ПРЫЖОК</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const overlay = document.getElementById("runnerOverlay");
+  const canvas = document.getElementById("runnerCanvas");
+  const ctx = canvas.getContext("2d");
+
+  const scoreEl = document.getElementById("runnerScore");
+  const missesEl = document.getElementById("runnerMisses");
+  const message = document.getElementById("runnerMessage");
+  const messageTitle = document.getElementById("runnerMessageTitle");
+  const messageText = document.getElementById("runnerMessageText");
+  const actionBtn = document.getElementById("runnerActionBtn");
+  const startBtn = document.getElementById("startRunnerBtn");
+  const closeBtn = document.getElementById("runnerCloseBtn");
+  const jumpBtn = document.getElementById("runnerJumpBtn");
+
+  const W = canvas.width;
+  const H = canvas.height;
+  const groundY = 315;
+
+  let running = false;
+  let gameOver = false;
+  let animationId = 0;
+  let lastTime = 0;
+  let worldSpeed = 5;
+  let spawnTimer = 0;
+  let score = 0;
+  let misses = 0;
+  let distance = 0;
+  let books = [];
+  let particles = [];
+
+  const player = {
+    x:170,
+    y:groundY,
+    vy:0,
+    jumping:false
+  };
+
+  const gravity = .72;
+  const jumpPower = -14.5;
+
+  function showMessage(title,text,buttonText) {
+    messageTitle.textContent = title;
+    messageText.textContent = text;
+    actionBtn.textContent = buttonText;
+    message.classList.remove("runner-message-hidden");
+  }
+
+  function hideMessage() {
+    message.classList.add("runner-message-hidden");
+  }
+
+  function updateStats() {
+    scoreEl.textContent = score;
+    missesEl.textContent = misses + " / 3";
+  }
+
+  function resetGame() {
+    running = false;
+    gameOver = false;
+    worldSpeed = 5;
+    spawnTimer = 70;
+    score = 0;
+    misses = 0;
+    distance = 0;
+    books = [];
+    particles = [];
+
+    player.y = groundY;
+    player.vy = 0;
+    player.jumping = false;
+
+    updateStats();
+    drawScene();
+
+    showMessage(
+      "Спасайтесь, издатель!",
+      "Перепрыгивайте через книги. Три столкновения, и Екатерина вас поймает.",
+      "Бежать!"
+    );
+  }
+
+  function startGame() {
+    cancelAnimationFrame(animationId);
+    resetGame();
+    hideMessage();
+    running = true;
+    lastTime = performance.now();
+    animationId = requestAnimationFrame(loop);
+  }
+
+  function closeGame() {
+    running = false;
+    cancelAnimationFrame(animationId);
+    overlay.hidden = true;
+  }
+
+  function jump() {
+    if (!running || gameOver || player.jumping) return;
+    player.vy = jumpPower;
+    player.jumping = true;
+    makeDust(player.x + 18,groundY + 2,7);
+  }
+
+  function makeDust(x,y,amount) {
+    for (let i = 0; i < amount; i++) {
+      particles.push({
+        x:x + Math.random() * 12,
+        y:y - Math.random() * 8,
+        vx:-Math.random() * 3,
+        vy:-Math.random() * 3,
+        life:20 + Math.random() * 15,
+        size:2 + Math.random() * 4
+      });
+    }
+  }
+
+  function roundedRect(x,y,w,h,r,color) {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.roundRect(x,y,w,h,r);
+    ctx.fill();
+  }
+
+  function drawBackground() {
+    const sky = ctx.createLinearGradient(0,0,0,H);
+    sky.addColorStop(0,"#b9aa89");
+    sky.addColorStop(.7,"#e1d0aa");
+    sky.addColorStop(1,"#b9a27c");
+    ctx.fillStyle = sky;
+    ctx.fillRect(0,0,W,H);
+
+    ctx.fillStyle = "rgba(255,242,198,.45)";
+    ctx.beginPath();
+    ctx.arc(730,72,40,0,Math.PI * 2);
+    ctx.fill();
+
+    for (let i = 0; i < 9; i++) {
+      const x = i * 115 - (distance * .18 % 115);
+      const height = 80 + (i % 3) * 24;
+
+      ctx.fillStyle = "#aa9878";
+      ctx.fillRect(x,groundY - height,85,height);
+
+      ctx.fillStyle = "#8d7b60";
+      ctx.fillRect(x + 8,groundY - height + 18,69,5);
+
+      ctx.fillStyle = "#d8c6a2";
+      for (let wy = groundY - height + 30; wy < groundY - 10; wy += 24) {
+        for (let wx = x + 10; wx < x + 72; wx += 20) {
+          ctx.fillRect(wx,wy,9,13);
+        }
+      }
+    }
+
+    ctx.fillStyle = "#7d6a51";
+    ctx.fillRect(0,groundY,W,H - groundY);
+
+    ctx.fillStyle = "#a18b69";
+    ctx.fillRect(0,groundY,W,6);
+
+    for (let row = 0; row < 3; row++) {
+      for (let i = 0; i < 18; i++) {
+        const x = i * 58 - (distance % 58);
+        const y = groundY + 20 + row * 19;
+        ctx.strokeStyle = "rgba(50,37,24,.24)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x,y,48,12);
+      }
+    }
+
+    ctx.fillStyle = "rgba(65,45,25,.22)";
+    for (let i = 0; i < 35; i++) {
+      const x = (i * 83 - distance * .5) % W;
+      const y = groundY + 10 + (i * 17) % 55;
+      ctx.fillRect((x + W) % W,y,3,2);
+    }
+  }
+
+  function drawBook(x,y,scale) {
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.scale(scale,scale);
+
+    ctx.fillStyle = "rgba(35,22,13,.25)";
+    ctx.beginPath();
+    ctx.ellipse(20,6,27,5,0,0,Math.PI * 2);
+    ctx.fill();
+
+    roundedRect(0,-29,43,30,3,"#e5d4ae");
+    ctx.fillStyle = "#b8a17b";
+    ctx.fillRect(4,-26,36,3);
+
+    roundedRect(-3,-34,43,30,3,"#682e28");
+
+    ctx.fillStyle = "#a66c3d";
+    ctx.fillRect(3,-33,5,27);
+
+    ctx.strokeStyle = "#d3ad64";
+    ctx.lineWidth = 1.4;
+    ctx.strokeRect(11,-29,25,20);
+
+    ctx.fillStyle = "#e5c578";
+    ctx.font = "bold 8px Georgia";
+    ctx.textAlign = "center";
+    ctx.fillText("КНИГА",23,-17);
+
+    ctx.restore();
+  }
+
+  function drawCatherine(x,y,scale) {
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.scale(scale,scale);
+
+    ctx.fillStyle = "rgba(20,12,8,.3)";
+    ctx.beginPath();
+    ctx.ellipse(25,4,35,8,0,0,Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#8b1f2a";
+    ctx.beginPath();
+    ctx.moveTo(5,-57);
+    ctx.lineTo(-9,-4);
+    ctx.lineTo(60,-4);
+    ctx.lineTo(45,-57);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = "#d4b16c";
+    ctx.beginPath();
+    ctx.moveTo(25,-53);
+    ctx.lineTo(18,-5);
+    ctx.lineTo(35,-5);
+    ctx.lineTo(31,-53);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = "#e4d7b9";
+    ctx.beginPath();
+    ctx.ellipse(9,-53,11,9,-.4,0,Math.PI * 2);
+    ctx.ellipse(43,-53,11,9,.4,0,Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = "#d9b18c";
+    ctx.lineWidth = 7;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(7,-50);
+    ctx.lineTo(-1,-31);
+    ctx.moveTo(45,-50);
+    ctx.lineTo(52,-30);
+    ctx.stroke();
+
+    ctx.fillStyle = "#e3bd98";
+    ctx.fillRect(21,-73,13,13);
+
+    ctx.fillStyle = "#e8c5a0";
+    ctx.beginPath();
+    ctx.ellipse(27,-83,17,21,0,0,Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#d7b47b";
+    ctx.beginPath();
+    ctx.arc(27,-91,20,Math.PI,Math.PI * 2);
+    ctx.fill();
+    ctx.fillRect(8,-92,8,21);
+    ctx.fillRect(38,-92,8,21);
+
+    ctx.beginPath();
+    ctx.ellipse(27,-105,13,10,-.15,0,Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#d6ac4d";
+    ctx.beginPath();
+    ctx.moveTo(15,-111);
+    ctx.lineTo(14,-123);
+    ctx.lineTo(23,-117);
+    ctx.lineTo(28,-128);
+    ctx.lineTo(33,-117);
+    ctx.lineTo(42,-123);
+    ctx.lineTo(40,-109);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.strokeStyle = "#8a611c";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.strokeStyle = "#3c2520";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(16,-86);
+    ctx.lineTo(22,-85);
+    ctx.moveTo(32,-85);
+    ctx.lineTo(38,-86);
+    ctx.stroke();
+
+    ctx.fillStyle = "#35221c";
+    ctx.fillRect(18,-83,3,3);
+    ctx.fillRect(33,-83,3,3);
+
+    ctx.strokeStyle = "#7c2526";
+    ctx.beginPath();
+    ctx.moveTo(22,-72);
+    ctx.lineTo(32,-74);
+    ctx.stroke();
+
+    ctx.fillStyle = "#f3e5c9";
+    for (let i = 0; i < 7; i++) {
+      ctx.beginPath();
+      ctx.arc(14 + i * 4,-61 + Math.sin(i / 6 * Math.PI) * 4,1.8,0,Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
+  }
+
+  function drawPublisher(x,y) {
+    ctx.save();
+    ctx.translate(x,y);
+
+    const pose = running && !player.jumping ? Math.sin(distance * .18) * 7 : 0;
+
+    ctx.fillStyle = "rgba(20,12,8,.3)";
+    ctx.beginPath();
+    ctx.ellipse(19,3,29,7,0,0,Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = "#292521";
+    ctx.lineWidth = 10;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(12,-29);
+    ctx.lineTo(8 + pose,-7);
+    ctx.lineTo(20 + pose,0);
+    ctx.moveTo(27,-29);
+    ctx.lineTo(31 - pose,-9);
+    ctx.lineTo(42 - pose,-2);
+    ctx.stroke();
+
+    ctx.strokeStyle = "#171513";
+    ctx.lineWidth = 8;
+    ctx.beginPath();
+    ctx.moveTo(17 + pose,-1);
+    ctx.lineTo(26 + pose,-1);
+    ctx.moveTo(37 - pose,-3);
+    ctx.lineTo(46 - pose,-3);
+    ctx.stroke();
+
+    ctx.fillStyle = "#282b30";
+    ctx.beginPath();
+    ctx.moveTo(5,-65);
+    ctx.lineTo(0,-31);
+    ctx.lineTo(39,-31);
+    ctx.lineTo(35,-65);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = "#41434a";
+    ctx.beginPath();
+    ctx.moveTo(6,-48);
+    ctx.lineTo(1,-31);
+    ctx.lineTo(18,-35);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(35,-48);
+    ctx.lineTo(39,-31);
+    ctx.lineTo(24,-35);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = "#e0d0ae";
+    ctx.beginPath();
+    ctx.moveTo(13,-64);
+    ctx.lineTo(18,-39);
+    ctx.lineTo(25,-39);
+    ctx.lineTo(30,-64);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = "#b38b4e";
+    for (let i = 0; i < 4; i++) {
+      ctx.beginPath();
+      ctx.arc(21,-58 + i * 5,1.3,0,Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.fillStyle = "#f1e5cc";
+    ctx.beginPath();
+    ctx.moveTo(15,-72);
+    ctx.lineTo(21,-59);
+    ctx.lineTo(28,-72);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = "#8c2222";
+    ctx.beginPath();
+    ctx.moveTo(18,-67);
+    ctx.lineTo(21,-61);
+    ctx.lineTo(24,-67);
+    ctx.lineTo(22,-71);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.strokeStyle = "#282b30";
+    ctx.lineWidth = 9;
+    ctx.beginPath();
+    ctx.moveTo(7,-60);
+    ctx.lineTo(-1,-44 - pose * .5);
+    ctx.moveTo(34,-60);
+    ctx.lineTo(43,-48 + pose * .5);
+    ctx.stroke();
+
+    ctx.strokeStyle = "#e8dcc1";
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.moveTo(-3,-46 - pose * .5);
+    ctx.lineTo(2,-42 - pose * .5);
+    ctx.moveTo(41,-50 + pose * .5);
+    ctx.lineTo(46,-46 + pose * .5);
+    ctx.stroke();
+
+    ctx.fillStyle = "#d5ad89";
+    ctx.beginPath();
+    ctx.arc(0,-42 - pose * .5,4,0,Math.PI * 2);
+    ctx.arc(45,-46 + pose * .5,4,0,Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#d7b18e";
+    ctx.fillRect(16,-82,11,13);
+
+    ctx.fillStyle = "#dfb997";
+    ctx.beginPath();
+    ctx.ellipse(21,-91,14,18,0,0,Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#5b4431";
+    ctx.beginPath();
+    ctx.arc(21,-99,14,Math.PI,Math.PI * 2);
+    ctx.fill();
+    ctx.fillRect(7,-99,4,11);
+
+    ctx.strokeStyle = "#4a3327";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(12,-93);
+    ctx.lineTo(18,-94);
+    ctx.moveTo(24,-94);
+    ctx.lineTo(30,-93);
+    ctx.stroke();
+
+    ctx.fillStyle = "#27211d";
+    ctx.fillRect(14,-91,3,3);
+    ctx.fillRect(25,-91,3,3);
+
+    ctx.strokeStyle = "#b78665";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(21,-90);
+    ctx.lineTo(20,-85);
+    ctx.lineTo(23,-85);
+    ctx.stroke();
+
+    ctx.strokeStyle = "#77463b";
+    ctx.beginPath();
+    ctx.moveTo(17,-80);
+    ctx.lineTo(25,-80);
+    ctx.stroke();
+
+    ctx.fillStyle = "#242326";
+    ctx.fillRect(7,-112,29,5);
+    ctx.fillRect(12,-136,19,25);
+
+    ctx.fillStyle = "#5d2526";
+    ctx.fillRect(12,-119,19,5);
+
+    ctx.strokeStyle = "#171719";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(12,-136,19,25);
+
+    ctx.strokeStyle = "#eee0bd";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(29,-135);
+    ctx.quadraticCurveTo(43,-151,39,-158);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  function drawScene() {
+    drawBackground();
+
+    ctx.fillStyle = "rgba(52,38,24,.7)";
+    ctx.font = "italic 15px Georgia";
+    ctx.textAlign = "left";
+    ctx.fillText("Санкт-Петербург, 1780-е годы",20,28);
+
+    const catX = 38 + misses * 27;
+    const catBob = running ? Math.sin(distance * .13) * 2 : 0;
+    drawCatherine(catX,groundY + catBob,.82);
+
+    for (const book of books) drawBook(book.x,groundY,book.scale);
+
+    for (const p of particles) {
+      ctx.globalAlpha = Math.max(0,p.life / 35);
+      ctx.fillStyle = "#e5d3af";
+      ctx.fillRect(p.x,p.y,p.size,p.size);
+    }
+    ctx.globalAlpha = 1;
+
+    drawPublisher(player.x,player.y);
+
+    if (misses === 2 && !gameOver) {
+      ctx.fillStyle = "#791d22";
+      ctx.font = "bold 17px Georgia";
+      ctx.textAlign = "right";
+      ctx.fillText("ОНА ПОЧТИ ДОГНАЛА ВАС!",W - 18,30);
+    }
+  }
+
+  function spawnBook() {
+    const scale = .9 + Math.random() * .35;
+    books.push({
+      x:W + 15,
+      scale,
+      width:44 * scale,
+      hit:false,
+      passed:false
+    });
+  }
+
+  function endGame() {
+    running = false;
+    gameOver = true;
+    cancelAnimationFrame(animationId);
+    drawScene();
+
+    showMessage(
+      "Екатерина вас поймала!",
+      "Вы преодолели " + score + " книг. Императрица настигла издателя после трёх ошибок. Попробуйте ещё раз!",
+      "Попробовать снова"
+    );
+  }
+
+  function update(dt) {
+    const factor = Math.min(dt / 16.67,2.2);
+
+    distance += worldSpeed * factor;
+    worldSpeed = Math.min(11,worldSpeed + .0015 * factor);
+
+    if (player.jumping) {
+      player.vy += gravity * factor;
+      player.y += player.vy * factor;
+
+      if (player.y >= groundY) {
+        player.y = groundY;
+        player.vy = 0;
+        player.jumping = false;
+        makeDust(player.x + 18,groundY + 2,5);
+      }
+    }
+
+    spawnTimer -= factor;
+
+    if (spawnTimer <= 0) {
+      spawnBook();
+      spawnTimer = 72 + Math.random() * 45 - worldSpeed * 2;
+      spawnTimer = Math.max(40,spawnTimer);
+    }
+
+    for (const book of books) {
+      book.x -= worldSpeed * factor;
+
+      const bookLeft = book.x - 3;
+      const bookRight = book.x + book.width;
+      const playerLeft = player.x + 3;
+      const playerRight = player.x + 39;
+
+      const overlaps = bookRight > playerLeft && bookLeft < playerRight;
+
+      if (overlaps && !book.hit && player.y >= groundY - 38) {
+        book.hit = true;
+        misses++;
+        updateStats();
+        makeDust(player.x + 25,groundY - 5,12);
+
+        if (misses >= 3) {
+          endGame();
+          return;
+        }
+      }
+
+      if (!book.passed && book.x + book.width < player.x) {
+        book.passed = true;
+        score++;
+        updateStats();
+      }
+    }
+
+    books = books.filter(book => book.x > -80);
+
+    for (const p of particles) {
+      p.x += p.vx * factor;
+      p.y += p.vy * factor;
+      p.vy += .12 * factor;
+      p.life -= factor;
+    }
+
+    particles = particles.filter(p => p.life > 0);
+  }
+
+  function loop(now) {
+    if (!running) return;
+
+    const dt = Math.min(now - lastTime || 16.67,35);
+    lastTime = now;
+    update(dt);
+
+    if (running) {
+      drawScene();
+      animationId = requestAnimationFrame(loop);
+    }
+  }
+
+  document.addEventListener("keydown",event => {
+    if (overlay.hidden) return;
+
+    if (event.code === "Space" || event.code === "ArrowUp") {
+      event.preventDefault();
+
+      if (!running && !gameOver) startGame();
+      else jump();
+    }
+
+    if (event.code === "Escape") closeGame();
+  });
+
+  canvas.addEventListener("pointerdown",event => {
+    if (!running) return;
+    event.preventDefault();
+    jump();
+  });
+
+  jumpBtn.addEventListener("click",jump);
+  actionBtn.addEventListener("click",startGame);
+
+  startBtn.addEventListener("click",() => {
+    overlay.hidden = false;
+    resetGame();
+  });
+
+  closeBtn.addEventListener("click",closeGame);
+
+  drawScene();
+})();
+</script>
+</body>
+</html>
